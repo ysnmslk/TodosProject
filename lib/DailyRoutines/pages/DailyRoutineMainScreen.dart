@@ -34,10 +34,13 @@ class DailyRoutineMainScreen extends ConsumerWidget {
             height: 20,
           ),
           ToolBarWidgets(),
-          for (var i = 0; i < allroutines!.length; i++)
-            ProviderScope(overrides: [
-              currentRoutineProvider.overrideWithValue(allroutines[i])
-            ], child: RTListItemWidget()),
+          if (allroutines != null && allroutines.isNotEmpty)
+            for (var i = 0; i < allroutines.length; i++)
+              ProviderScope(overrides: [
+                currentRoutineProvider.overrideWithValue(allroutines[i])
+              ], child: RTListItemWidget())
+          else
+            const Center(child: Text("No routines available.")),
         ],
       ),
     );

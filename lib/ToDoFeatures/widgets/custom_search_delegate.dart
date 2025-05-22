@@ -58,7 +58,7 @@ class CustomSearchDelegate extends SearchDelegate {
                 ),
                 key: Key(oankiListeElemani.id),
                 onDismissed: (direction) async {
-                  filteredList.remove(index);
+                  filteredList.remove(oankiListeElemani);
                   await locater<LocalStorage>()
                       .deleteTask(taskModel: oankiListeElemani);
                 },

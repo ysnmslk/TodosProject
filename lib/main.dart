@@ -23,11 +23,11 @@ Future<void> setupHive() async {
     Hive.registerAdapter(TaskModelAdapter());
   }
   var taskBox = await Hive.openBox<TaskModel>('tasks');
-  for (var task in taskBox.values) {
-    if (task.createdAt.day != DateTime.now().day) {
-      taskBox.delete(task.id);
-    }
-  }
+  // for (var task in taskBox.values) {
+  //   if (task.createdAt.day != DateTime.now().day) {
+  //     taskBox.delete(task.id);
+  //   }
+  // }
 }
 
 Future<void> main() async {
@@ -36,8 +36,8 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 // en tepedeki alanı transparant yapar.
-  await Hive.initFlutter();
-  Hive.registerAdapter(TaskModelAdapter());
+  // await Hive.initFlutter(); // Moved to setupHive
+  // Hive.registerAdapter(TaskModelAdapter()); // Moved to setupHive
   await setupHive();
   setup();
   runApp(EasyLocalization(
