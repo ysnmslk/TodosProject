@@ -19,6 +19,8 @@ class ToDoMainScreen extends StatefulWidget {
 class _ToDoMainScreenState extends State<ToDoMainScreen> {
   late List<TaskModel> _allTasks;
   late LocalStorage _localStorage;
+  int _selectedFilterIndex = 0;
+  List<bool> _isSelected = [true, false, false];
 
   @override
   void initState() {
@@ -77,41 +79,87 @@ class _ToDoMainScreenState extends State<ToDoMainScreen> {
                 icon: const Icon(Icons.access_alarms_sharp, )),
           ],
         ),
-        body: _allTasks.isEmpty
-            ? Center(
-                child: const Text('empty_task_list').tr(),
-              )
-            : ListView.builder(
-                itemBuilder: (context, index) {
-                  var oankiListeElemani = _allTasks[index];
-                  return Dismissible(
-                    background: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.delete,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: 7),
-                        const Text('remove_task').tr(),
-                      ],
-                    ),
-                    key: UniqueKey(),
-                    //Key(_oankiListeElemani.id),
-                    // Uniquekey( sorunu çözüyor ama silme yaptırmıyo
-
-                    onDismissed: (DismissDirection direction) {
-                      setState(() {
-                        _allTasks.remove(context);
-                        _localStorage.deleteTask(
-                            taskModel: oankiListeElemani);
-                      });
-                    },
-                    child: TaskItem(task: oankiListeElemani),
-                  );
+        body: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ToggleButtons(
+                isSelected: _isSelected,
+                onPressed: (int index) {
+                  setState(() {
+                    _selectedFilterIndex = index;
+                    for (int i = 0; i < _isSelected.length; i++) {
+                      _isSelected[i] = i == index;
+                    }
+                  });
                 },
-                itemCount: _allTasks.length,
-              ));
+                children: const <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text("All"), // Placeholder, consider .tr()
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text("Active"), // Placeholder, consider .tr()
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text("Completed"), // Placeholder, consider .tr()
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _getFilteredTasks().isEmpty
+                  ? Center(
+                      child: const Text('empty_task_list')
+                          .tr(), // Or a more specific message like 'No tasks match the current filter'
+                    )
+                  : ListView.builder(
+                      itemBuilder: (context, index) {
+                        var oankiListeElemani = _getFilteredTasks()[index];
+                        return Dismissible(
+                          background: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.delete,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(width: 7),
+                              const Text('remove_task').tr(),
+                            ],
+                          ),
+                          key: Key(oankiListeElemani.id),
+                          onDismissed: (DismissDirection direction) {
+                            // Important: Also remove from _allTasks
+                            final originalTask = _allTasks.firstWhere((task) => task.id == oankiListeElemani.id);
+                            setState(() {
+                              _allTasks.remove(originalTask);
+                               _localStorage.deleteTask(
+                                  taskModel: originalTask);
+                            });
+                          },
+                          child: TaskItem(task: oankiListeElemani),
+                        );
+                      },
+                      itemCount: _getFilteredTasks().length,
+                    ),
+            ),
+          ],
+        ));
+  }
+
+  List<TaskModel> _getFilteredTasks() {
+    switch (_selectedFilterIndex) {
+      case 1: // Active
+        return _allTasks.where((task) => !task.isCompleted).toList();
+      case 2: // Completed
+        return _allTasks.where((task) => task.isCompleted).toList();
+      case 0: // All
+      default:
+        return _allTasks;
+    }
   }
 
   void _showAddTaskSheet() {

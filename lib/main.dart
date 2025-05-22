@@ -9,11 +9,13 @@ import 'package:moriartytodos/ToDoFeatures/models/task_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'ToDoFeatures/data/local_storage.dart';
 import 'ToDoFeatures/pages/home_page.dart';
+import 'package:moriartytodos/auth/authentication_service.dart'; // Added import
 
 final locater = GetIt.instance;
 
 void setup() {
   locater.registerSingleton<LocalStorage>(HiveLocalStorage());
+  locater.registerSingleton<AuthService>(FirebaseAuthenticationService()); // Added registration
 }
 
 Future<void> setupHive() async {
@@ -23,11 +25,11 @@ Future<void> setupHive() async {
     Hive.registerAdapter(TaskModelAdapter());
   }
   var taskBox = await Hive.openBox<TaskModel>('tasks');
-  for (var task in taskBox.values) {
-    if (task.createdAt.day != DateTime.now().day) {
-      taskBox.delete(task.id);
-    }
-  }
+  // for (var task in taskBox.values) {
+  //   if (task.createdAt.day != DateTime.now().day) {
+  //     taskBox.delete(task.id);
+  //   }
+  // }
 }
 
 Future<void> main() async {
@@ -36,8 +38,8 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 // en tepedeki alanı transparant yapar.
-  await Hive.initFlutter();
-  Hive.registerAdapter(TaskModelAdapter());
+  // await Hive.initFlutter(); // Moved to setupHive
+  // Hive.registerAdapter(TaskModelAdapter()); // Moved to setupHive
   await setupHive();
   setup();
   runApp(EasyLocalization(

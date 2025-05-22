@@ -36,6 +36,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+  # TODO: Add Firebase Authentication related dependencies when ready to connect
+  # firebase_core: ^latest_version
+  # firebase_auth: ^latest_version
+  # google_sign_in: ^latest_version # For Google Sign-In
+  # sign_in_with_apple: ^latest_version # For Sign in with Apple
 
   #A flutter date time picker inspired by flutter-cupertino-date-picker
   # you can choose date / time / date&time in multiple languages
