@@ -9,11 +9,13 @@ import 'package:moriartytodos/ToDoFeatures/models/task_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'ToDoFeatures/data/local_storage.dart';
 import 'ToDoFeatures/pages/home_page.dart';
+import 'package:moriartytodos/auth/authentication_service.dart'; // Added import
 
 final locater = GetIt.instance;
 
 void setup() {
   locater.registerSingleton<LocalStorage>(HiveLocalStorage());
+  locater.registerSingleton<AuthService>(FirebaseAuthenticationService()); // Added registration
 }
 
 Future<void> setupHive() async {
